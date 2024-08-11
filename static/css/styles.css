@@ -1,0 +1,178 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #1a1a1a;
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.container {
+    max-width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 2.2em;
+    margin: 0;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 60px); /* Adjust based on header height */
+}
+
+.draft-board {
+    height: 50%;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 3px;
+    margin-bottom: 15px;
+}
+
+.draft-cell {
+    background-color: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    padding: 5px;
+    text-align: center;
+    font-size: 0.8em;
+    min-width: 70px;
+}
+
+.draft-cell .pick-number {
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.draft-cell .player-name {
+    font-size: 0.9em;
+}
+
+.bottom-section {
+    display: flex;
+    gap: 15px;
+    height: 50%;
+}
+
+.available-players, .recommendations {
+    flex: 1;
+    background-color: #2a2a2a;
+    padding: 15px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.available-players {
+    overflow: hidden; /* Hide overflow for the container */
+}
+
+.table-container {
+    overflow-y: auto; /* Enable vertical scrolling for the table container */
+    flex-grow: 1; /* Allow table container to grow and fill available space */
+}
+
+h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+}
+
+#player-search {
+    width: calc(100% - 16px);
+    padding: 8px;
+    margin-bottom: 15px;
+    background-color: #3a3a3a;
+    border: 1px solid #4a4a4a;
+    color: #ffffff;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #3a3a3a;
+    font-size: 0.9em;
+}
+
+th {
+    background-color: #3a3a3a;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 0.9em;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Position-based colors */
+.draft-cell.RB { background-color: rgba(0, 128, 0, 0.2); }
+.draft-cell.WR { background-color: rgba(0, 0, 255, 0.2); }
+.draft-cell.QB { background-color: rgba(255, 192, 203, 0.2); }
+.draft-cell.TE { background-color: rgba(255, 165, 0, 0.2); }
+.draft-cell.K { background-color: rgba(238, 130, 238, 0.2); }
+.draft-cell.DST { background-color: rgba(165, 42, 42, 0.2); }
+
+.current-pick {
+    border: 2px solid #ff9800;
+}
+
+.recommendations {
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    .bottom-section {
+        flex-direction: column;
+    }
+}
+
+.search-reset {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+#player-search {
+    flex-grow: 1;
+}
+
+#reset-draft {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#reset-draft:hover {
+    background-color: #d32f2f;
+}

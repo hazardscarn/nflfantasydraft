@@ -3,137 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fantasy Football Draft</title>
-    <style>
-        :root {
-            --background-color: #1e1e1e;
-            --draft-board-bg: #2a2a2a;
-            --cell-bg-1: #3a3a3a;
-            --cell-bg-2: #4a4a4a;
-            --text-color: #ffffff;
-            --highlight-color: #4CAF50;
-            --border-color: #555555;
-        }
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: var(--background-color);
-            color: var(--text-color);
-        }
-        .container {
-            display: flex;
-            flex-direction: column;
-            height: calc(100vh - 40px);
-            gap: 20px;
-        }
-        .draft-board {
-            flex: 2;
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 4px;
-            background-color: var(--draft-board-bg);
-            padding: 10px;
-            border-radius: 8px;
-            overflow-y: auto;
-            max-height: 60vh;
-        }
-        .draft-cell {
-            background-color: var(--cell-bg-1);
-            padding: 8px;
-            font-size: 12px;
-            border-radius: 4px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 60px;
-        }
-        .draft-cell:nth-child(even) {
-            background-color: var(--cell-bg-2);
-        }
-        .player-section {
-            flex: 1;
-            display: flex;
-            gap: 20px;
-        }
-        .available-players, .recommendations {
-            flex: 1;
-            background-color: var(--draft-board-bg);
-            border-radius: 8px;
-            padding: 10px;
-            overflow-y: auto;
-        }
-        .player-list {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .player-list th, .player-list td {
-            padding: 8px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .player-list th {
-            background-color: var(--cell-bg-2);
-        }
-        .search-bar {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            background-color: var(--cell-bg-1);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-        }
-        button {
-            background-color: var(--highlight-color);
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 14px;
-            margin-top: 5px;
-            cursor: pointer;
-            border-radius: 3px;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        h2 {
-            margin-top: 0;
-            padding: 10px;
-            background-color: var(--cell-bg-2);
-            color: var(--text-color);
-            border-radius: 4px 4px 0 0;
-        }
-    </style>
+    <title>Fantasy Football Draft Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <div class="container">
-        <div id="draft-board" class="draft-board"></div>
-        <div class="player-section">
-            <div class="available-players">
-                <h2>Available Players</h2>
-                <input type="text" id="player-search" class="search-bar" placeholder="Search players...">
-                <table id="available-players-table" class="player-list">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Position</th>
-                            <th>ADP</th>
-                            <th>Projection</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+        <header>
+            <h1>Fantasy Football Draft Assistant</h1>
+        </header>
+        <main>
+            <div id="draft-board" class="draft-board"></div>
+            <div class="bottom-section">
+                <div class="available-players">
+                    <h2>Available Players</h2>
+                    <div class="search-reset">
+                        <input type="text" id="player-search" placeholder="Search players...">
+                        <button id="reset-draft">Reset Draft</button>
+                    </div>
+                    <div class="table-container">
+                        <table id="available-players-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Position</th>
+                                    <th>ADP</th>
+                                    <th>Projection</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="recommendations">
+                    <h2>Recommendations</h2>
+                    <div id="recommendations"></div>
+                </div>
             </div>
-            <div class="recommendations">
-                <h2>Recommendations</h2>
-                <div id="recommendations"></div>
-            </div>
-        </div>
+        </main>
     </div>
     <script src="{{ url_for('static', filename='js/draft.js') }}"></script>
 </body>

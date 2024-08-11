@@ -1,5 +1,4 @@
-console.log('Draft script loaded');
-
+// Existing variables
 let draftPosition = parseInt(new URLSearchParams(window.location.search).get('position'));
 let currentRound = 1;
 let currentPick = 1;
@@ -7,55 +6,112 @@ let draftBoard = Array(18).fill().map(() => Array(12).fill(null));
 let availablePlayers = [];
 let recommendations = [];
 
-console.log(`Draft position: ${draftPosition}`);
+// Function to save draft state to local storage
+function saveDraftState() {
+    const draftState = {
+        draftPosition,
+        currentRound,
+        currentPick,
+        draftBoard,
+        availablePlayers
+    };
+    localStorage.setItem('draftState', JSON.stringify(draftState));
+}
+
+// Function to load draft state from local storage
+function loadDraftState() {
+    const savedState = localStorage.getItem('draftState');
+    if (savedState) {
+        const state = JSON.parse(savedState);
+        draftPosition = state.draftPosition;
+        currentRound = state.currentRound;
+        currentPick = state.currentPick;
+        draftBoard = state.draftBoard;
+        availablePlayers = state.availablePlayers;
+        
+        // Redraw the draft board
+        redrawDraftBoard();
+        // Update available players
+        displayAvailablePlayers();
+        // Update draft status
+        updateDraftStatus();
+    }
+}
+
+// Function to redraw the draft board
+function redrawDraftBoard() {
+    const board = document.getElementById('draft-board');
+    board.innerHTML = ''; // Clear existing board
+    for (let i = 0; i < 18; i++) {
+        for (let j = 0; j < 12; j++) {
+            const cell = document.createElement('div');
+            cell.className = 'draft-cell';
+            cell.id = `cell-${i}-${j}`;
+            const player = draftBoard[i][j];
+            if (player) {
+                cell.innerHTML = `
+                    <div class="pick-number">${i+1}.${j+1}</div>
+                    <div class="player-name">${player.player} (${player.pos})</div>
+                `;
+                cell.classList.add(player.pos);
+            } else {
+                cell.innerHTML = `
+                    <div class="pick-number">${i+1}.${j+1}</div>
+                    <div class="player-name">-</div>
+                `;
+            }
+            board.appendChild(cell);
+        }
+    }
+}
+
+// Function to reset the draft
+function resetDraft() {
+    localStorage.removeItem('draftState');
+    location.reload();
+}
 
 function initializeDraftBoard() {
-    console.log('Initializing draft board');
     const board = document.getElementById('draft-board');
-    if (!board) {
-        console.error('Draft board element not found');
-        return;
-    }
     for (let i = 0; i < 18; i++) {
         for (let j = 0; j < 12; j++) {
             const cell = document.createElement('div');
             cell.className = 'draft-cell';
             cell.id = `cell-${i}-${j}`;
             cell.innerHTML = `
-                <div>R${i+1} P${j+1}</div>
+                <div class="pick-number">${i+1}.${j+1}</div>
                 <div class="player-name">-</div>
             `;
             board.appendChild(cell);
         }
     }
-    console.log('Draft board initialized');
 }
 
 async function fetchAvailablePlayers() {
-    console.log('Fetching available players');
     try {
         const response = await fetch('/api/available_players');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data = await response.json();
-        console.log(`Fetched ${data.length} players`);
-        availablePlayers = data;
+        availablePlayers = await response.json();
         displayAvailablePlayers();
-        await getRecommendations();
+        updateDraftStatus();
     } catch (error) {
         console.error('Error fetching available players:', error);
         document.getElementById('available-players-table').innerHTML = `<p>Error loading players: ${error.message}</p>`;
     }
 }
 
-function displayAvailablePlayers() {
-    console.log('Displaying available players');
-    const tbody = document.querySelector('#available-players-table tbody');
-    if (!tbody) {
-        console.error('Available players table body not found');
-        return;
+function scrollToDraftPick(row, col) {
+    const cell = document.getElementById(`cell-${row}-${col}`);
+    if (cell) {
+        cell.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
     }
+}
+
+
+function displayAvailablePlayers() {
+    const tbody = document.querySelector('#available-players-table tbody');
     tbody.innerHTML = '';
     availablePlayers.forEach(player => {
         const row = document.createElement('tr');
@@ -64,15 +120,22 @@ function displayAvailablePlayers() {
             <td>${player.pos || 'N/A'}</td>
             <td>${player.ADP !== null ? parseFloat(player.ADP).toFixed(1) : 'N/A'}</td>
             <td>${player.ppr_projection !== null ? parseFloat(player.ppr_projection).toFixed(1) : 'N/A'}</td>
-            <td><button onclick="handleDraftPick('${player.player}')">Draft</button></td>
+            <td><button onclick="handleDraftPick('${escapePlayerName(player.player)}')">Draft</button></td>
         `;
         tbody.appendChild(row);
     });
-    console.log(`Displayed ${availablePlayers.length} players`);
+}
+
+function escapePlayerName(name) {
+    return name.replace(/'/g, "\\'").replace(/"/g, '\\"');
 }
 
 async function getRecommendations() {
-    console.log('Getting recommendations');
+    if (!isUserTurn()) {
+        clearRecommendations();
+        return;
+    }
+
     try {
         const response = await fetch('/api/recommendations', {
             method: 'POST',
@@ -90,7 +153,6 @@ async function getRecommendations() {
             throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
         recommendations = await response.json();
-        console.log(`Received ${recommendations.length} recommendations`);
         displayRecommendations();
     } catch (error) {
         console.error('Error getting recommendations:', error);
@@ -98,47 +160,90 @@ async function getRecommendations() {
     }
 }
 
+function displayRecommendations() {
+    const recommendationsDiv = document.getElementById('recommendations');
+    recommendationsDiv.innerHTML = '';
+    if (isUserTurn()) {
+        recommendationsDiv.innerHTML = '<h3>Recommendations for your pick:</h3>';
+        recommendations.forEach(player => {
+            const playerDiv = document.createElement('div');
+            playerDiv.innerHTML = `
+                <p>${player.player} (${player.pos}) - ADP: ${player.ADP}, Projection: ${player.ppr_projection}, Q-value: ${player.q_value.toFixed(2)}</p>
+                <button onclick="handleDraftPick('${escapePlayerName(player.player)}')">Draft</button>
+            `;
+            recommendationsDiv.appendChild(playerDiv);
+        });
+    } else {
+        recommendationsDiv.innerHTML = '<p>Waiting for your turn...</p>';
+    }
+}
+
+function clearRecommendations() {
+    document.getElementById('recommendations').innerHTML = '<p>Waiting for your turn...</p>';
+}
+
 function handleDraftPick(playerName) {
     const player = availablePlayers.find(p => p.player === playerName);
     if (!player) return;
 
-    const col = (currentPick - 1) % 12;
+    const col = getCurrentPickColumn();
     const row = currentRound - 1;
     draftBoard[row][col] = player;
-    document.getElementById(`cell-${row}-${col}`).innerHTML = `
-        <div>R${row+1} P${col+1}</div>
+    const cell = document.getElementById(`cell-${row}-${col}`);
+    
+    cell.innerHTML = `
+        <div class="pick-number">${row+1}.${col+1}</div>
         <div class="player-name">${player.player} (${player.pos})</div>
     `;
-
+    cell.className = `draft-cell ${player.pos}`;
+    scrollToDraftPick(row, col);
     availablePlayers = availablePlayers.filter(p => p.player !== playerName);
     displayAvailablePlayers();
 
-    if (currentPick % 12 === 0) {
-        currentRound++;
-    }
     currentPick++;
+    if (currentPick > 12) {
+        currentRound++;
+        currentPick = 1;
+    }
 
     updateDraftStatus();
-
-    if ((currentPick - 1) % 12 === draftPosition - 1) {
-        getRecommendations();
-    }
+    // After updating the draft board and available players
+    saveDraftState();
 }
 
+function isUserTurn() {
+    return getCurrentPickColumn() === draftPosition - 1;
+}
 
+function getCurrentPickColumn() {
+    if (currentRound % 2 === 1) {
+        return currentPick - 1;
+    } else {
+        return 12 - currentPick;
+    }
+}
 
 function updateDraftStatus() {
     const cells = document.querySelectorAll('.draft-cell');
     cells.forEach(cell => cell.classList.remove('current-pick'));
     
-    const currentCol = (currentPick - 1) % 12;
+    const currentCol = getCurrentPickColumn();
     const currentRow = currentRound - 1;
     const currentCell = document.getElementById(`cell-${currentRow}-${currentCol}`);
     if (currentCell) {
         currentCell.classList.add('current-pick');
-        currentCell.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        scrollToDraftPick(currentRow, currentCol);
+    }
+
+    if (isUserTurn()) {
+        getRecommendations();
+    } else {
+        clearRecommendations();
     }
 }
+
+
+
 
 function setupSearch() {
     const searchInput = document.getElementById('player-search');
@@ -154,10 +259,15 @@ function setupSearch() {
     }
 }
 
+// Modify the window.onload function
 window.onload = function() {
-    console.log('Window loaded');
     initializeDraftBoard();
-    fetchAvailablePlayers();
-    updateDraftStatus();
+    loadDraftState();
+    if (availablePlayers.length === 0) {
+        fetchAvailablePlayers();
+    }
     setupSearch();
+    
+    // Add event listener for reset button
+    document.getElementById('reset-draft').addEventListener('click', resetDraft);
 };

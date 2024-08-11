@@ -1,15 +1,23 @@
 from flask import Flask, render_template, request, jsonify
 from models.draft_model import FantasyFootballDraftAssistant
 import logging
-import json
+import os
 import numpy as np
+
 logging.basicConfig(level=logging.DEBUG)
 
+app = Flask(__name__, static_folder='static', template_folder='templates')
 
-app = Flask(__name__)
-
+# Initialize and load the draft assistant
 draft_assistant = FantasyFootballDraftAssistant()
-draft_assistant.load_data('data//cbs_fantasy_projection_master.csv')
+draft_assistant.load_data('data/cbs_fantasy_projection_master.csv')
+
+model_file = 'data/fantasy_football_model.pkl'
+if os.path.exists(model_file):
+    draft_assistant.load_model(model_file)
+    logging.info("Loaded existing model.")
+else:
+    logging.error("Pre-trained model not found. Please ensure the model file exists.")
 
 @app.route('/')
 def index():
@@ -18,6 +26,7 @@ def index():
 @app.route('/draft')
 def draft():
     return render_template('draft.html')
+
 @app.route('/api/available_players', methods=['GET'])
 def get_available_players():
     logging.debug("Received request for available players")
@@ -47,14 +56,18 @@ def get_recommendations():
         logging.error("No available players provided")
         return jsonify({"error": "No available players", "details": data}), 400
     
-    recommendations = draft_assistant.recommend_players(team, available_players, round_num)
-    
-    if isinstance(recommendations, list) and recommendations and 'error' in recommendations[0]:
-        logging.error(f"Error in recommendations: {recommendations[0]}")
-        return jsonify(recommendations[0]), 400
-    
-    logging.debug(f"Returning {len(recommendations)} recommendations")
-    return jsonify(recommendations)
+    try:
+        recommendations = draft_assistant.recommend_players(team, available_players, round_num)
+        
+        if not recommendations:
+            logging.error("No recommendations generated")
+            return jsonify({"error": "No recommendations generated", "details": data}), 400
+        
+        logging.debug(f"Returning {len(recommendations)} recommendations")
+        return jsonify(recommendations)
+    except Exception as e:
+        logging.exception("Unexpected error in get_recommendations")
+        return jsonify({"error": str(e), "details": data}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

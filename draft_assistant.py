@@ -45,6 +45,7 @@ class FantasyFootballDraftAssistant:
         
         return sorted(scores, key=lambda x: x[1], reverse=True)[:num_recommendations]
     
+    
     def simulate_draft(self, num_teams=12, num_rounds=18):
         draft_order = list(range(num_teams)) * num_rounds
         for i in range(1, num_rounds, 2):
