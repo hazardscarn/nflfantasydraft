@@ -7,20 +7,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
+
 <body>
     <div class="container">
         <header>
-            <h1>Fantasy Football Draft Assistant</h1>
+            <a href="/" class="back-button">← Back to Home</a>
+            <h1>Draft Bay</h1>
+            <button id="reset-draft" class="reset-button">Reset Draft</button>
         </header>
         <main>
             <div id="draft-board" class="draft-board"></div>
+    
             <div class="bottom-section">
                 <div class="available-players">
-                    <h2>Available Players</h2>
-                    <div class="search-reset">
-                        <input type="text" id="player-search" placeholder="Search players...">
-                        <button id="reset-draft">Reset Draft</button>
-                    </div>
+                    <h2 class="section-title">Available Players</h2>
+                    <input type="text" id="player-search" placeholder="Search players...">
                     <div class="table-container">
                         <table id="available-players-table">
                             <thead>
@@ -36,9 +37,10 @@
                         </table>
                     </div>
                 </div>
+    
                 <div class="recommendations">
-                    <h2>Recommendations</h2>
-                    <div id="recommendations"></div>
+                    <h2 class="section-title">Recommendations</h2>
+                    <div id="recommendation-cards" class="recommendation-cards"></div>
                 </div>
             </div>
         </main>

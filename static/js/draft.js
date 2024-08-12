@@ -5,8 +5,8 @@ let currentPick = 1;
 let draftBoard = Array(18).fill().map(() => Array(12).fill(null));
 let availablePlayers = [];
 let recommendations = [];
+let isCurrentUserTurn = false;
 
-// Function to save draft state to local storage
 function saveDraftState() {
     const draftState = {
         draftPosition,
@@ -18,7 +18,6 @@ function saveDraftState() {
     localStorage.setItem('draftState', JSON.stringify(draftState));
 }
 
-// Function to load draft state from local storage
 function loadDraftState() {
     const savedState = localStorage.getItem('draftState');
     if (savedState) {
@@ -29,19 +28,15 @@ function loadDraftState() {
         draftBoard = state.draftBoard;
         availablePlayers = state.availablePlayers;
         
-        // Redraw the draft board
         redrawDraftBoard();
-        // Update available players
         displayAvailablePlayers();
-        // Update draft status
         updateDraftStatus();
     }
 }
 
-// Function to redraw the draft board
 function redrawDraftBoard() {
     const board = document.getElementById('draft-board');
-    board.innerHTML = ''; // Clear existing board
+    board.innerHTML = '';
     for (let i = 0; i < 18; i++) {
         for (let j = 0; j < 12; j++) {
             const cell = document.createElement('div');
@@ -65,7 +60,6 @@ function redrawDraftBoard() {
     }
 }
 
-// Function to reset the draft
 function resetDraft() {
     localStorage.removeItem('draftState');
     location.reload();
@@ -109,7 +103,6 @@ function scrollToDraftPick(row, col) {
     }
 }
 
-
 function displayAvailablePlayers() {
     const tbody = document.querySelector('#available-players-table tbody');
     tbody.innerHTML = '';
@@ -131,12 +124,13 @@ function escapePlayerName(name) {
 }
 
 async function getRecommendations() {
-    if (!isUserTurn()) {
+    if (!isCurrentUserTurn) {
         clearRecommendations();
         return;
     }
 
     try {
+        const pick_number = (currentRound - 1) * 12 + currentPick;
         const response = await fetch('/api/recommendations', {
             method: 'POST',
             headers: {
@@ -145,7 +139,8 @@ async function getRecommendations() {
             body: JSON.stringify({
                 team: draftBoard.map(round => round[draftPosition - 1]).filter(Boolean).map(player => player.player),
                 available_players: availablePlayers.map(player => player.player),
-                round_num: currentRound
+                round_num: currentRound,
+                pick_number: pick_number
             }),
         });
         if (!response.ok) {
@@ -156,30 +151,34 @@ async function getRecommendations() {
         displayRecommendations();
     } catch (error) {
         console.error('Error getting recommendations:', error);
-        document.getElementById('recommendations').innerHTML = `<p>Error loading recommendations: ${error.message}</p>`;
+        document.getElementById('recommendation-cards').innerHTML = `<p>Error loading recommendations: ${error.message}</p>`;
     }
 }
 
 function displayRecommendations() {
-    const recommendationsDiv = document.getElementById('recommendations');
+    const recommendationsDiv = document.getElementById('recommendation-cards');
     recommendationsDiv.innerHTML = '';
-    if (isUserTurn()) {
-        recommendationsDiv.innerHTML = '<h3>Recommendations for your pick:</h3>';
+    if (isCurrentUserTurn) {
         recommendations.forEach(player => {
-            const playerDiv = document.createElement('div');
-            playerDiv.innerHTML = `
-                <p>${player.player} (${player.pos}) - ADP: ${player.ADP}, Projection: ${player.ppr_projection}, Q-value: ${player.q_value.toFixed(2)}</p>
-                <button onclick="handleDraftPick('${escapePlayerName(player.player)}')">Draft</button>
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <h3>${player.player} (${player.pos})</h3>
+                <p class="reward-score">Reward Score: ${player.q_value.toFixed(2)}</p>
+                <p>Projection: ${player.ppr_projection.toFixed(2)}</p>
+                <p>ADP: ${player.ADP.toFixed(1)}</p>
+                <button class="draft-button" onclick="handleDraftPick('${escapePlayerName(player.player)}')">Draft</button>
             `;
-            recommendationsDiv.appendChild(playerDiv);
+            recommendationsDiv.appendChild(card);
         });
     } else {
-        recommendationsDiv.innerHTML = '<p>Waiting for your turn...</p>';
+        clearRecommendations();
     }
 }
 
 function clearRecommendations() {
-    document.getElementById('recommendations').innerHTML = '<p>Waiting for your turn...</p>';
+    const recommendationsDiv = document.getElementById('recommendation-cards');
+    recommendationsDiv.innerHTML = '<p>Waiting for your turn...</p>';
 }
 
 function handleDraftPick(playerName) {
@@ -207,7 +206,6 @@ function handleDraftPick(playerName) {
     }
 
     updateDraftStatus();
-    // After updating the draft board and available players
     saveDraftState();
 }
 
@@ -235,15 +233,13 @@ function updateDraftStatus() {
         scrollToDraftPick(currentRow, currentCol);
     }
 
-    if (isUserTurn()) {
+    isCurrentUserTurn = isUserTurn();
+    if (isCurrentUserTurn) {
         getRecommendations();
     } else {
         clearRecommendations();
     }
 }
-
-
-
 
 function setupSearch() {
     const searchInput = document.getElementById('player-search');
@@ -259,7 +255,6 @@ function setupSearch() {
     }
 }
 
-// Modify the window.onload function
 window.onload = function() {
     initializeDraftBoard();
     loadDraftState();
@@ -268,6 +263,5 @@ window.onload = function() {
     }
     setupSearch();
     
-    // Add event listener for reset button
     document.getElementById('reset-draft').addEventListener('click', resetDraft);
 };

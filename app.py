@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-from models.draft_model import FantasyFootballDraftAssistant
+from models.draft_recommendation import FantasyFootballDraftAssistant
 import logging
 import os
 import numpy as np
@@ -12,7 +12,7 @@ app = Flask(__name__, static_folder='static', template_folder='templates')
 draft_assistant = FantasyFootballDraftAssistant()
 draft_assistant.load_data('data/cbs_fantasy_projection_master.csv')
 
-model_file = 'data/fantasy_football_model.pkl'
+model_file = 'models/fantasy_football_model.pkl'
 if os.path.exists(model_file):
     draft_assistant.load_model(model_file)
     logging.info("Loaded existing model.")
@@ -26,6 +26,10 @@ def index():
 @app.route('/draft')
 def draft():
     return render_template('draft.html')
+
+@app.route('/research')
+def research():
+    return render_template('research.html')
 
 @app.route('/api/available_players', methods=['GET'])
 def get_available_players():
@@ -51,13 +55,18 @@ def get_recommendations():
     team = data.get('team', [])
     available_players = data.get('available_players', [])
     round_num = data.get('round_num', 1)
+    pick_number = data.get('pick_number', 1)
     
     if not available_players:
         logging.error("No available players provided")
         return jsonify({"error": "No available players", "details": data}), 400
     
     try:
-        recommendations = draft_assistant.recommend_players(team, available_players, round_num)
+        # Convert team and available_players from list of names to list of player dictionaries
+        team_dicts = [next(p for p in draft_assistant.players if p['player'] == player) for player in team]
+        available_player_dicts = [next(p for p in draft_assistant.players if p['player'] == player) for player in available_players]
+        
+        recommendations = draft_assistant.recommend_players(team_dicts, available_player_dicts, round_num, pick_number)
         
         if not recommendations:
             logging.error("No recommendations generated")
@@ -68,6 +77,7 @@ def get_recommendations():
     except Exception as e:
         logging.exception("Unexpected error in get_recommendations")
         return jsonify({"error": str(e), "details": data}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)

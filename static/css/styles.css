@@ -176,3 +176,115 @@ button:hover {
 #reset-draft:hover {
     background-color: #d32f2f;
 }
+
+.back-button-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.back-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #555;
+}
+
+/* Add these styles to your existing CSS file */
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: #1a1a1a;
+}
+
+.back-button, .reset-button {
+    padding: 0.5rem 1rem;
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.back-button:hover, .reset-button:hover {
+    background-color: #555;
+}
+.recommendation-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.card {
+    background-color: #2a2a2a;
+    border-radius: 10px;
+    padding: 1rem;
+    width: 200px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.card h3 {
+    margin-top: 0;
+    color: #4CAF50;
+}
+
+.reward-score {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #FFC107;
+}
+
+.draft-button {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 1rem;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.draft-button:hover {
+    background-color: #45a049;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.card {
+    font-size: 0.9rem; /* Slightly reduce the font size */
+}
+
+.card h3 {
+    font-size: 1.1rem; /* Adjust the heading size */
+}
+
+.reward-score {
+    font-size: 1rem; /* Adjust the reward score size */
+}
+
+.draft-button {
+    font-size: 0.9rem; /* Adjust the button text size */
+}
