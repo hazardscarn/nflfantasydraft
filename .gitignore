@@ -1,1 +1,13 @@
 venv
+chatbot
+notebooks
+bot/documents/player_outlook
+bot/documents/extracts
+bot/documents/cleaned_extracts
+bot/documents/youtube_cleaned_extracts
+bot/documents/rest_of_players.csv
+bot/documents/NFLDK2024_CS_ClayProjections2024.docx
+bot/player_report_rop.py
+.env
+bot/ssl
+notebooks

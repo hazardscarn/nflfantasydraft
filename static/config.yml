@@ -1,0 +1,16 @@
+youtubechannels:
+  CBSFantasyFootball
+  FlockFantasy
+  UnderdogFantasy
+  FantasyPros
+
+vectordb:
+  youtube:
+    ffyoutube
+  article:
+    ffarticles
+  playerreport:
+    ffplayerreport
+
+EMBEDDING_MODEL:
+  "models/text-embedding-004"

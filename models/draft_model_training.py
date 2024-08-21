@@ -263,7 +263,7 @@ if __name__ == '__main__':
         print("No existing model found. Starting new training...")
 
     # Train the model
-    num_episodes = 50000
+    num_episodes = 140000
     print(f"Training the model for {num_episodes} episodes...")
     assistant.train(num_episodes=num_episodes)
 

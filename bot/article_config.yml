@@ -1,0 +1,125 @@
+web_articles:
+  article1:
+    url: "https://www.espn.com/fantasy/football/story/_/id/40526462/2024-fantasy-football-rankings-strategy-draft-tips-waivers-trades"
+    title: "2024 Fantasy Football Rankings, Strategy, Draft Tips, Waivers, Trades"
+    output_path: "chatbot//documents//cleaned_extracts//article1.txt"
+
+  article2:
+    url: "https://www.espn.com/fantasy/football/story/_/page/FFSleepBustBreak24-40335318/fantasy-football-2024-rankings-sleepers-breakouts-busts"
+    title: "Fantasy Football 2024 Rankings, Sleepers, Breakouts, Busts"
+    output_path: "chatbot//documents//cleaned_extracts//article2.txt"
+
+  article5:
+    url: "https://www.espn.com/fantasy/football/story/_/id/40699880/fantasy-football-injuries-position-battles-nfl-news-analysis"
+    title: "Fantasy Football Injuries, Position Battles: NFL News and Analysis"
+    output_path: "chatbot//documents//cleaned_extracts//article5.txt"
+
+  article6:
+    url: "https://www.espn.com/fantasy/football/story/_/id/40722642/2024-fantasy-football-favorite-targets-joe-burrow-jamarr-chase"
+    title: "2024 Fantasy Football: Favorite Targets - Joe Burrow, Ja'Marr Chase"
+    output_path: "chatbot//documents//cleaned_extracts//article6.txt"
+
+  article7:
+    url: "https://www.espn.com/fantasy/football/story/_/id/40764105/2024-fantasy-football-draft-picks-upside-best-ball"
+    title: "2024 Fantasy Football Draft Picks: Upside Best Ball"
+    output_path: "chatbot//documents//cleaned_extracts//article7.txt"
+
+
+  article9:
+    url: "https://www.espn.com/fantasy/football/story/_/id/40747409/2024-fantasy-football-draft-strategy-d-st-defense-streaming"
+    title: "2024 Fantasy Football Draft Strategy: D/ST Defense Streaming"
+    output_path: "chatbot//documents//cleaned_extracts//article9.txt"
+
+  article10:
+    url: "https://www.espn.com/fantasy/football/story/_/id/40299187/2024-fantasy-football-strategy-quarterback-qb-preview"
+    title: "2024 Fantasy Football Strategy: Quarterback (QB) Preview"
+    output_path: "chatbot//documents//cleaned_extracts//article10.txt"
+
+  article11:
+    url: "https://www.espn.com/fantasy/football/story/_/id/40326500/2024-fantasy-football-strategy-running-back-rb-preview"
+    title: "2024 Fantasy Football Strategy: Running Back (RB) Preview"
+    output_path: "chatbot//documents//cleaned_extracts//article11.txt"
+
+
+  article13:
+    url: "https://www.espn.com/fantasy/football/story/_/id/40586948/2024-fantasy-football-rankings-running-backs-insurance-backups"
+    title: "2024 Fantasy Football Rankings: Running Backs Insurance Backups"
+    output_path: "chatbot//documents//cleaned_extracts//article13.txt"
+
+  article14:
+    url: "https://www.espn.com/fantasy/football/story/_/id/40269995/2024-fantasy-football-rookie-draft-prep-caleb-williams-marvin-harrison-jr"
+    title: "2024 Fantasy Football Rookie Draft Prep: Caleb Williams, Marvin Harrison Jr."
+    output_path: "chatbot//documents//cleaned_extracts//article14.txt"
+
+  article15:
+    url: "https://www.fantasypros.com/2023/06/what-is-zero-rb-strategy/"
+    title: "What is Zero RB Strategy?"
+    output_path: "chatbot//documents//cleaned_extracts//article15.txt"
+
+  article16:
+    url: "https://www.fantasypros.com/2023/07/what-is-hero-rb-draft-strategy-2023-fantasy-football/"
+    title: "What is Hero RB Draft Strategy?"
+    output_path: "chatbot//documents//cleaned_extracts//article16.txt"
+
+  article17:
+    url: "https://www.fantasypros.com/2024/07/fantasy-football-draft-strategy-advice-what-is-robust-rb/"
+    title: "Fantasy Football Draft Strategy Advice: What is Robust RB?"
+    output_path: "chatbot//documents//cleaned_extracts//article17.txt"
+
+  article18:
+    url: "https://www.fantasypros.com/2024/07/what-is-value-based-drafting-vbd/"
+    title: "What is Value-Based Drafting (VBD)?"
+    output_path: "chatbot//documents//cleaned_extracts//article18.txt"
+
+  article19:
+    url: "https://www.cbssports.com/fantasy/football/news/fantasy-football-2024-jamey-eisenbergs-busts-3-0-looks-at-the-bust-case-for-every-player-ranked-1-12/"
+    title: "Fantasy Football 2024: Jamey Eisenberg's Busts 3.0"
+    output_path: "chatbot//documents//cleaned_extracts//article19.txt"
+
+  article20:
+    url: "https://www.cbssports.com/fantasy/football/news/fantasy-football-2024-draft-prep-jamey-eisenbergs-breakouts-3-0-pinpoints-players-who-will-win-your-leagues/"
+    title: "Fantasy Football 2024 Draft Prep: Jamey Eisenberg's Breakouts 3.0"
+    output_path: "chatbot//documents//cleaned_extracts//article20.txt"
+
+  article21:
+    url: "https://www.cbssports.com/fantasy/football/news/fantasy-football-2024-draft-prep-jamey-eisenbergs-sleepers-3-0-pinpoints-best-values-at-all-positions/"
+    title: "Fantasy Football 2024 Draft Prep: Jamey Eisenberg's Sleepers 3.0"
+    output_path: "chatbot//documents//cleaned_extracts//article21.txt"
+
+  article22:
+    url: "https://www.cbssports.com/fantasy/football/news/fantasy-football-2024-august-adp-review-round-1-plus-key-average-draft-position-takeaways/"
+    title: "Fantasy Football 2024: August ADP Review Round 1"
+    output_path: "chatbot//documents//cleaned_extracts//article22.txt"
+
+  article23:
+    url: "https://www.cbssports.com/fantasy/football/news/fantasy-football-2024-flex-league-industry-expert-draft-key-strategy-takeaways-from-the-defending-champion/"
+    title: "Fantasy Football 2024: Flex League Industry Expert Draft"
+    output_path: "chatbot//documents//cleaned_extracts//article23.txt"
+
+  article24:
+    url: "https://www.cbssports.com/fantasy/football/news/fantasy-football-draft-prep-2024-drafting-from-no-7-overall-in-a-ppr-league-full-results-standout-picks/"
+    title: "Fantasy Football Draft Prep 2024: Drafting from No. 7 Overall in a PPR League"
+    output_path: "chatbot//documents//cleaned_extracts//article24.txt"
+
+  article25:
+    url: "https://www.cbssports.com/fantasy/football/news/fantasy-football-draft-prep-2024-drafting-from-no-1-overall-in-a-ppr-league-full-results-standout-picks/"
+    title: "Fantasy Football Draft Prep 2024: Drafting from No. 1 Overall in a PPR League"
+    output_path: "chatbot//documents//cleaned_extracts//article25.txt"
+
+  article26:
+    url: "https://www.cbssports.com/fantasy/football/news/fantasy-football-2024-end-of-july-adp-review-round-1-plus-position-by-position-adp-takeaways/"
+    title: "Fantasy Football 2024: End of July ADP Review Round 1"
+    output_path: "chatbot//documents//cleaned_extracts//article26.txt"
+
+  article27:
+    url: "https://www.cbssports.com/fantasy/football/news/fantasy-football-2024-draft-prep-te-tiers-include-a-new-no-1-optimism-for-a-polarizing-player-and-more/"
+    title: "Fantasy Football 2024 Draft Prep: TE Tiers"
+    output_path: "chatbot//documents//cleaned_extracts//article27.txt"
+
+  article28:
+    url: "https://www.cbssports.com/fantasy/football/news/fantasy-football-2024-draft-prep-wr-tiers-include-a-rookie-wideout-whos-set-up-for-early-success-and-more/"
+    title: "Fantasy Football 2024 Draft Prep: WR Tiers"
+    output_path: "chatbot//documents//cleaned_extracts//article28.txt"
+
+
+output_path: "chatbot//documents//cleaned_extracts"
