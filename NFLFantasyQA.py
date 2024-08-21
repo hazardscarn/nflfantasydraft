@@ -29,20 +29,98 @@ class NFLFantasyQA:
         self.tidb_connection_string = os.getenv('TIDB_CONNECTION_URL')
         self.google_api_key = os.getenv('GOOGLE_API_KEY')
         
-        self.article_retriever = None
-        self.player_retriever = None
-        self.search_tool = None
-        self.player_classifier = None
-        self.llm = None
+        # Initialize these as None, they'll be created when first accessed
+        self._article_retriever = None
+        self._player_retriever = None
+        self._search_tool = None
+        self._player_classifier = None
+        self._llm = None
+        self._agent = None
         
         logging.basicConfig(level=logging.DEBUG)
         self.logger = logging.getLogger(__name__)
-
-        self.agent = self.create_nfl_fantasy_agent()
         
         # Register cleanup method
         atexit.register(self.cleanup)
     
+    @property
+    def article_retriever(self):
+        if self._article_retriever is None:
+            self.logger.info("Initializing article retriever")
+            self._article_retriever = self.create_retriever(self.config['vectordb']['article'], k=5)
+        return self._article_retriever
+
+    @property
+    def player_retriever(self):
+        if self._player_retriever is None:
+            self.logger.info("Initializing player retriever")
+            self._player_retriever = self.create_retriever(self.config['vectordb']['playerreport'], k=2)
+        return self._player_retriever
+
+    @property
+    def search_tool(self):
+        if self._search_tool is None:
+            self.logger.info("Initializing search tool")
+            self._search_tool = DuckDuckGoSearchRun()
+        return self._search_tool
+
+    @property
+    def player_classifier(self):
+        if self._player_classifier is None:
+            self.logger.info("Initializing player classifier")
+            llm = ChatGoogleGenerativeAI(
+                model="gemini-1.5-flash-001",
+                temperature=0.1,
+                top_p=0.95,
+                google_api_key=self.google_api_key,
+                generation_config={"response_mime_type": "application/json"}
+            )
+            prompt = ChatPromptTemplate.from_template(
+                """You are an NFL Fantasy Football expert. Determine if the following question requires information about specific players.
+                
+                Question: {question}
+                
+                Respond with JSON using the following schema:
+                {{"needs_player_info": boolean}}
+                
+                Your response:
+                """
+            )
+            self._player_classifier = prompt | llm
+        return self._player_classifier
+
+    @property
+    def llm(self):
+        if self._llm is None:
+            self.logger.info("Initializing LLM")
+            self._llm = ChatGoogleGenerativeAI(
+                model="gemini-1.5-flash-001",
+                temperature=0.3,
+                top_p=0.95,
+                google_api_key=self.google_api_key
+            )
+        return self._llm
+
+    @property
+    def agent(self):
+        if self._agent is None:
+            self.logger.info("Creating NFL Fantasy Football Agent")
+            workflow = StateGraph(AgentState)
+
+            workflow.add_node("get_article_context", self.get_article_context)
+            workflow.add_node("get_player_context", self.get_player_context)
+            workflow.add_node("search_web", self.search_web)
+            workflow.add_node("generate_answer", self.generate_answer)
+
+            workflow.set_entry_point("get_article_context")
+            workflow.add_edge("get_article_context", "get_player_context")
+            workflow.add_edge("get_player_context", "search_web")
+            workflow.add_edge("search_web", "generate_answer")
+            workflow.add_edge("generate_answer", END)
+
+            self._agent = workflow.compile()
+        return self._agent
+
     def create_retriever(self, table_name: str, k: int = 5, search_kwargs: Optional[Dict] = None) -> TiDBVectorStore:
         self.logger.info(f"Creating retriever for table: {table_name}")
         embeddings = GoogleGenerativeAIEmbeddings(model=self.config['EMBEDDING_MODEL'], google_api_key=self.google_api_key)
@@ -55,35 +133,6 @@ class NFLFantasyQA:
             search_kwargs = {}
         search_kwargs["k"] = k
         return vector_store.as_retriever(search_kwargs=search_kwargs)
-
-    def create_player_classifier(self):
-        self.logger.info("Creating player classifier")
-        llm = ChatGoogleGenerativeAI(
-            model="gemini-1.5-flash-001",
-            temperature=0.1,
-            top_p=0.95,
-            google_api_key=self.google_api_key,
-            generation_config={"response_mime_type": "application/json"}
-        )
-        prompt = ChatPromptTemplate.from_template(
-            """You are an NFL Fantasy Football expert. Determine if the following question requires information about specific players.
-            
-            Question: {question}
-            
-            Respond with JSON using the following schema:
-            {{"needs_player_info": boolean}}
-            
-            Your response:
-            """
-        )
-        return prompt | llm
-
-    # def get_article_context(self, state: AgentState) -> AgentState:
-    #     self.logger.info("Getting article context")
-    #     docs = self.article_retriever.invoke(state["question"])
-    #     state["contexts"].extend([{"source": "article", "content": doc.page_content} for doc in docs])
-    #     self.logger.debug(f"Retrieved {len(docs)} article(s)")
-    #     return state
 
     def get_article_context(self, state: AgentState) -> AgentState:
         self.logger.info("Getting article context")
@@ -256,34 +305,6 @@ class NFLFantasyQA:
         state["final_answer"] = markdown_response
         return state
 
-    def create_nfl_fantasy_agent(self):
-        self.logger.info("Creating NFL Fantasy Football Agent")
-        self.article_retriever = self.create_retriever(self.config['vectordb']['article'], k=5)
-        self.player_retriever = self.create_retriever(self.config['vectordb']['playerreport'], k=2)
-        self.search_tool = DuckDuckGoSearchRun()
-        self.player_classifier = self.create_player_classifier()
-        self.llm = ChatGoogleGenerativeAI(
-            model="gemini-1.5-flash-001",
-            temperature=0.3,
-            top_p=0.95,
-            google_api_key=self.google_api_key
-        )
-
-        workflow = StateGraph(AgentState)
-
-        workflow.add_node("get_article_context", self.get_article_context)
-        workflow.add_node("get_player_context", self.get_player_context)
-        workflow.add_node("search_web", self.search_web)
-        workflow.add_node("generate_answer", self.generate_answer)
-
-        workflow.set_entry_point("get_article_context")
-        workflow.add_edge("get_article_context", "get_player_context")
-        workflow.add_edge("get_player_context", "search_web")
-        workflow.add_edge("search_web", "generate_answer")
-        workflow.add_edge("generate_answer", END)
-
-        return workflow.compile()
-
     def get_answer(self, question: str) -> str:
         self.logger.info(f"Received question: {question}")
         initial_state = AgentState(question=question, contexts=[], final_answer="")
@@ -298,7 +319,7 @@ class NFLFantasyQA:
 
     def cleanup(self):
         self.logger.info("Cleaning up resources...")
-        for retriever_name in ['article_retriever', 'player_retriever']:
+        for retriever_name in ['_article_retriever', '_player_retriever']:
             retriever = getattr(self, retriever_name, None)
             if retriever is not None:
                 try:
@@ -326,5 +347,4 @@ class NFLFantasyQA:
 # if __name__ == "__main__":
 #     qa_system = NFLFantasyQA()
 #     question = "Who is the best quarterback for fantasy football this season?"
-#     answer = qa_system.get_answer(question)
-#     print(f"Q: {question}\nA: {answer}")
+#     answer = qa_

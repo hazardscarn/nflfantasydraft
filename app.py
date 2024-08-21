@@ -35,7 +35,10 @@ nfl_fantasy_qa = NFLFantasyQA()
 embeddings = GoogleGenerativeAIEmbeddings(model=EMBEDDING_MODEL, google_api_key=google_api_key)
 
 
-logging.basicConfig(level=logging.DEBUG)
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+#logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
@@ -230,4 +233,11 @@ def similar_players():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    logger.info(f"Starting application on port {port}")
+    app.run(host='0.0.0.0', port=port)
+
+# Add this outside the if __name__ == '__main__' block
+port = int(os.environ.get("PORT", 10000))
+logger.info(f"Application configured to run on port {port}")
