@@ -11,3 +11,4 @@ bot/player_report_rop.py
 .env
 bot/ssl
 notebooks
+fantasy_football_model.pkl
