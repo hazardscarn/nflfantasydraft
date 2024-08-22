@@ -29,7 +29,7 @@ The NFL Fantasy Draft Assistant is a sophisticated application designed to help 
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/nflfantasydraft.git
+   git clone https://github.com/hazardscarn/nflfantasydraft.git
    cd nflfantasydraft
    ```
 
@@ -61,6 +61,10 @@ The NFL Fantasy Draft Assistant is a sophisticated application designed to help 
    - Draft Assistant: Get real-time advice during your fantasy draft
    - YouTube Expert: Ask questions and get insights from popular fantasy football YouTube channels
    - Player Similarity: Find players with similar attributes and projections
+
+4. If you want to try out the aplication deployed on render:
+    
+    https://nflfantasydraft.onrender.com/
 
 ## Contributing
 
